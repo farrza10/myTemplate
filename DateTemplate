@@ -1,0 +1,34 @@
+import pandas as pd
+import numpy as np
+from dateutil.relativedelta import relativedelta
+from datetime import datetime, timedelta
+
+####Just For Iteration Purpose to find Date Indexes###########
+def create_date_template(monthback, end_date):
+    end_date = pd.to_datetime(end_date, format='%m/%d/%Y')
+    start_date = end_date - pd.DateOffset(months=monthback - 1)
+    start_date = start_date.replace(day = 1)
+    date_template = pd.date_range(start=start_date, end=end_date, freq='MS')
+    template = pd.DataFrame(date_template, columns=["Date"])
+
+    template["MinDate"] = template["Date"].min()
+    template["MaxDate"] = template["Date"].max()
+    template["Year Month Number"] = template["Date"].dt.year * 12 + template["Date"].dt.month - 1
+    #     template["YearMonth"] = template["Date"].dt.year * 100 + template["Date"].dt.month
+    #     template["Week"] = template["Date"].dt.isocalendar().week
+    template["Max_Year_Month_Numbr_Index"] = np.max(template["Year Month Number"])
+    template["Min_Year_Month_Numbr_Index"] = np.min(template["Year Month Number"])
+    template["sixmonth_lookback_Index"] = template["Max_Year_Month_Numbr_Index"] - 6
+    template["oneyear_lookback_Index"] = template["Max_Year_Month_Numbr_Index"] - 12
+
+    return template
+
+####Finding the starting date for simulation########
+def lookback(end_date, months):
+    end_date = pd.to_datetime(end_date, format='%m/%d/%Y')
+    start_date = end_date - pd.DateOffset(months=months - 1)
+    start_date = start_date.replace(day=1)
+    return start_date
+
+
+
